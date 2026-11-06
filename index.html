@@ -3,550 +3,303 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MHBK Chef-Cockpit | Bau- & Projektportfolio</title>
+  <title>MHBK Projekt-Header</title>
+  <!-- Offizielles monday SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #0073ea;
-      --primary-hover: #005bb5;
-      --bg-app: #0f172a;
-      --sidebar-bg: #1e293b;
-      --sidebar-border: #334155;
+      --primary-hover: #0060c0;
+      --bg-color: #f6f7fb;
       --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --border-light: #f1f5f9;
+      --text-main: #323338;
+      --text-muted: #676879;
+      --border-color: #d0d4e4;
+      --border-light: #eceff8;
+      --radius: 10px;
+      --shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 
-      --status-progress: #0284c7;
-      --status-stopped: #e11d48;
-      --status-done: #10b981;
+      --status-progress-bg: #0073ea;
+      --status-stopped-bg: #e2445c;
+      --status-done-bg: #00ca72;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
-    body { background-color: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 14px; display: flex; justify-content: center; }
 
-    .app-shell { display: flex; width: 100vw; height: 100vh; }
-
-    /* Left Sidebar */
-    .sidebar {
-      width: 380px; min-width: 340px; background-color: var(--sidebar-bg);
-      border-right: 1px solid var(--sidebar-border); display: flex; flex-direction: column; height: 100%;
+    .app-container {
+      width: 100%; max-width: 1200px; background: var(--card-bg);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      border: 1px solid var(--border-color); overflow: hidden;
     }
-    .sidebar-header { padding: 20px; border-bottom: 1px solid var(--sidebar-border); background: #111827; color: #fff; }
-    .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .logo-badge { background: var(--primary); width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .logo-title { font-size: 17px; font-weight: 800; }
-    .logo-subtitle { font-size: 11px; color: #94a3b8; text-transform: uppercase; }
 
-    .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-    .kpi-card { background: #1e293b; border: 1px solid var(--sidebar-border); border-radius: 8px; padding: 8px 10px; text-align: center; cursor: pointer; transition: all 0.15s; }
-    .kpi-card:hover, .kpi-card.active { border-color: var(--primary); background: #243248; }
-    .kpi-num { font-size: 16px; font-weight: 800; color: #fff; }
-    .kpi-label { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
-
-    .search-box { width: 100%; background: #1e293b; border: 1px solid var(--sidebar-border); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; }
-    .search-box:focus { border-color: var(--primary); }
-
-    .project-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .project-list::-webkit-scrollbar { width: 6px; }
-    .project-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-
-    .project-item {
-      background: #1e293b; border: 1px solid var(--sidebar-border); border-radius: 8px;
-      padding: 12px 14px; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; gap: 6px;
+    .header-bar {
+      padding: 16px 20px; background: linear-gradient(135deg, #1c2738 0%, #2b3a4f 100%);
+      color: #ffffff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
     }
-    .project-item:hover { background: #273549; border-color: #475569; }
-    .project-item.active { background: #1e3a5f; border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+    .brand-area { display: flex; align-items: center; gap: 10px; }
+    .brand-icon { font-size: 22px; background: rgba(255, 255, 255, 0.12); padding: 6px 10px; border-radius: 6px; }
+    .brand-title { font-size: 17px; font-weight: 700; }
+    .brand-subtitle { font-size: 11px; color: #a4b3c7; }
 
-    .item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-    .item-name { font-size: 13px; font-weight: 700; color: #f8fafc; line-height: 1.3; }
-    .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
-    .dot-progress { background-color: var(--status-progress); box-shadow: 0 0 8px rgba(2, 132, 199, 0.6); }
-    .dot-stopped { background-color: var(--status-stopped); box-shadow: 0 0 8px rgba(225, 29, 72, 0.6); }
-    .dot-done { background-color: var(--status-done); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
-
-    .item-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; }
-    .item-badge { background: #0f172a; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; color: #cbd5e1; }
-
-    /* Right Main Viewport */
-    .main-viewport { flex: 1; height: 100%; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; }
-
-    .cockpit-header {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff;
-      padding: 24px 32px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
-    }
-    .active-project-title { font-size: 22px; font-weight: 800; color: #fff; }
-    .active-project-sub { font-size: 13px; color: #94a3b8; }
-
-    .status-group { display: flex; background: rgba(0, 0, 0, 0.35); padding: 5px; border-radius: 32px; gap: 6px; border: 1px solid rgba(255, 255, 255, 0.1); }
+    .status-group { display: flex; background: rgba(0, 0, 0, 0.25); padding: 4px; border-radius: 30px; gap: 4px; }
     .status-btn {
-      border: none; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 700;
-      padding: 9px 20px; border-radius: 24px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+      border: none; background: transparent; color: #ced6e2; font-size: 12px; font-weight: 600;
+      padding: 7px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 6px;
     }
-    .status-btn:hover { color: #fff; }
-    .status-btn.active.progress { background-color: var(--status-progress); color: #fff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); }
-    .status-btn.active.stopped { background-color: var(--status-stopped); color: #fff; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4); }
-    .status-btn.active.done { background-color: var(--status-done); color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+    .status-btn:hover { color: #ffffff; }
+    .status-btn.active.progress { background-color: var(--status-progress-bg); color: #fff; box-shadow: 0 2px 8px rgba(0,115,234,0.4); }
+    .status-btn.active.stopped { background-color: var(--status-stopped-bg); color: #fff; box-shadow: 0 2px 8px rgba(226,68,92,0.4); }
+    .status-btn.active.done { background-color: var(--status-done-bg); color: #fff; box-shadow: 0 2px 8px rgba(0,202,114,0.4); }
 
-    .stopped-reason-bar { display: none; background: #ffe4e6; border-bottom: 2px solid #fda4af; padding: 14px 32px; animation: slideDown 0.2s ease-out; }
-    .stopped-reason-bar.visible { display: flex; align-items: center; gap: 16px; }
-    .stopped-label { font-size: 12px; font-weight: 800; color: #be123c; text-transform: uppercase; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .stopped-input { flex: 1; border: 1px solid #fb7185; background: #ffffff; border-radius: 6px; padding: 8px 14px; font-size: 13px; color: #881337; font-weight: 600; outline: none; }
+    .stopped-reason-bar {
+      display: none; background: #fff0f2; border-bottom: 2px solid #fecdd3;
+      padding: 12px 20px; animation: slideDown 0.2s ease-out;
+    }
+    .stopped-reason-bar.visible { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .stopped-label { font-size: 11px; font-weight: 700; color: #be123c; text-transform: uppercase; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .stopped-input {
+      flex: 1; min-width: 260px; border: 1px solid #fda4af; background: #ffffff;
+      border-radius: 6px; padding: 7px 12px; font-size: 13px; color: #881337; font-weight: 500; outline: none;
+    }
 
     @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
     .key-params-bar {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px; padding: 20px 32px; background: #ffffff; border-bottom: 1px solid var(--border-color);
+      gap: 14px; padding: 16px 20px; background: #fafbfc; border-bottom: 2px solid var(--border-light);
     }
-    .param-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .param-box { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
     .param-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
 
     .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
     .pill {
-      background: #ffffff; border: 1px solid #cbd5e1; color: #334155; font-size: 12px; font-weight: 600;
-      padding: 6px 12px; border-radius: 16px; cursor: pointer; transition: all 0.15s ease; user-select: none;
+      background: #f0f3f9; border: 1px solid #dbe2ef; color: #434c59; font-size: 12px; font-weight: 600;
+      padding: 5px 11px; border-radius: 16px; cursor: pointer; transition: all 0.15s ease; user-select: none;
       display: inline-flex; align-items: center; gap: 4px;
     }
-    .pill:hover { background: #f1f5f9; border-color: #94a3b8; }
-    .pill.active { background: var(--primary); border-color: var(--primary); color: #ffffff; box-shadow: 0 2px 6px rgba(0, 115, 234, 0.25); }
-    .pill.active.highlight-orange { background: #ea580c; border-color: #ea580c; color: #ffffff; box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3); }
+    .pill:hover { background: #e2e8f4; }
+    .pill.active { background: #0073ea; border-color: #0073ea; color: #ffffff; box-shadow: 0 2px 5px rgba(0,115,234,0.25); }
+    .pill.active.highlight-orange { background: #ea580c; border-color: #ea580c; color: #ffffff; }
 
-    .cockpit-content { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
-    .section-title { font-size: 16px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .section-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+    .main-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+    .section-header-title { font-size: 15px; font-weight: 700; color: #1f2a37; display: flex; align-items: center; gap: 8px; }
+    .section-subtitle { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
 
-    .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
-    .card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; padding: 18px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02); display: flex; flex-direction: column; gap: 12px; }
-    .card-title { font-size: 13px; font-weight: 700; color: #1e293b; border-bottom: 1px solid var(--border-light); padding-bottom: 8px; }
-    .field-row { display: flex; flex-direction: column; gap: 6px; }
-    .field-title { font-size: 12px; font-weight: 600; color: #475569; }
-    .input-clean { border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: var(--text-main); outline: none; transition: all 0.2s; }
+    .card { background: #ffffff; border: 1px solid var(--border-light); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .card-title { font-size: 12px; font-weight: 700; color: #2b394e; border-bottom: 1px solid var(--border-light); padding-bottom: 6px; }
+    .field-row { display: flex; flex-direction: column; gap: 5px; }
+    .field-title { font-size: 11px; font-weight: 600; color: #4b5563; }
+    .input-clean { border: 1px solid #d0d4e4; background: #fafbfc; border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--text-main); outline: none; }
     .input-clean:focus { background: #ffffff; border-color: var(--primary); }
-    .input-clean:disabled { background: #f1f5f9; color: #64748b; cursor: not-allowed; }
+    .input-clean:disabled { background: #f1f5f9; color: #64748b; }
 
-    .input-with-pill { display: flex; gap: 8px; align-items: center; }
-    .input-with-pill .input-clean { flex: 1; }
+    .checkbox-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .checkbox-label { font-size: 11px; color: #374151; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .checkbox-label input { accent-color: var(--primary); }
 
-    .checkbox-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .checkbox-label { font-size: 12px; color: #334155; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-    .checkbox-label input { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; }
-
-    .bottom-bar {
-      margin-top: auto; padding: 16px 32px; background: #ffffff; border-top: 1px solid var(--border-color);
-      display: flex; justify-content: space-between; align-items: center; position: sticky; bottom: 0; z-index: 100;
+    .footer-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 20px; background: #fafbfc; border-top: 1px solid var(--border-color);
     }
-    .save-info { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-    .btn-save { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-save:hover { background: var(--primary-hover); }
+    .last-saved { font-size: 11px; color: var(--text-muted); }
+    .btn-save { background-color: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-save:hover { background-color: var(--primary-hover); }
 
     .toast {
-      position: fixed; bottom: 24px; right: 24px; background: #10b981; color: white;
-      padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15); display: none; z-index: 1000;
+      position: fixed; bottom: 20px; right: 20px; background: #00ca72; color: white;
+      padding: 10px 18px; border-radius: 6px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 1000;
     }
   </style>
 </head>
 <body>
 
-  <div class="app-shell">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo-area">
-          <div class="logo-badge">🏢</div>
-          <div>
-            <div class="logo-title">MHBK Chef-Cockpit</div>
-            <div class="logo-subtitle">Bauvorhaben & Portfolio</div>
-          </div>
-        </div>
-
-        <div class="kpi-row">
-          <div class="kpi-card active" onclick="filterByStatus('all')">
-            <div class="kpi-num" id="kpiTotal">0</div>
-            <div class="kpi-label">Alle</div>
-          </div>
-          <div class="kpi-card" onclick="filterByStatus('In Bearbeitung')">
-            <div class="kpi-num" id="kpiProgress" style="color: #38bdf8;">0</div>
-            <div class="kpi-label">Aktiv</div>
-          </div>
-          <div class="kpi-card" onclick="filterByStatus('Gestoppt')">
-            <div class="kpi-num" id="kpiStopped" style="color: #fb7185;">0</div>
-            <div class="kpi-label">Stopp</div>
-          </div>
-        </div>
-
-        <input type="text" id="projectSearch" class="search-box" placeholder="🔍 Projekt suchen..." oninput="handleSearch(this.value)">
-      </div>
-
-      <div class="project-list" id="projectListContainer"></div>
-    </div>
-
-    <!-- MAIN COCKPIT -->
-    <div class="main-viewport">
-      <div class="cockpit-header">
-        <div class="project-headline">
-          <div class="active-project-title" id="activeTitle">Projekt auswählen</div>
-          <div class="active-project-sub" id="activeMeta">MHBK Bestandsneubau & Serielles Bauen</div>
-        </div>
-
-        <div class="status-group">
-          <button type="button" class="status-btn progress active" data-group="main_status" data-value="In Bearbeitung" onclick="handleStatusClick(this)">
-            🔵 In Bearbeitung
-          </button>
-          <button type="button" class="status-btn stopped" data-group="main_status" data-value="Gestoppt" onclick="handleStatusClick(this)">
-            🔴 Gestoppt
-          </button>
-          <button type="button" class="status-btn done" data-group="main_status" data-value="Abgeschlossen" onclick="handleStatusClick(this)">
-            🟢 Abgeschlossen
-          </button>
-        </div>
-      </div>
-
-      <div id="stoppedReasonBar" class="stopped-reason-bar">
-        <div class="stopped-label"><span>⚠️</span> Warum gestoppt?</div>
-        <input type="text" id="stoppedReason" class="stopped-input" placeholder="Grund für Stopp angeben (z. B. Wirtschaftlichkeit, Genehmigungshindernis...)">
-      </div>
-
-      <div class="key-params-bar">
-        <div class="param-box">
-          <div class="param-label">🧱 Bauart</div>
-          <div class="pill-group">
-            <div class="pill active" data-group="bauart" data-value="Seriell Hybrid" onclick="selectSingle(this)">Seriell Hybrid</div>
-            <div class="pill" data-group="bauart" data-value="Seriell Massiv" onclick="selectSingle(this)">Seriell Massiv</div>
-            <div class="pill" data-group="bauart" data-value="Stein auf Stein" onclick="selectSingle(this)">Stein auf Stein</div>
-          </div>
-        </div>
-
-        <div class="param-box">
-          <div class="param-label">⚡ Energiestandard</div>
-          <div class="pill-group">
-            <div class="pill" data-group="energiestandard" data-value="KFW-55 EE" onclick="selectSingle(this)">KFW-55 EE</div>
-            <div class="pill active" data-group="energiestandard" data-value="KFW 40EE" onclick="selectSingle(this)">KFW 40EE</div>
-            <div class="pill" data-group="energiestandard" data-value="KFW 40EE + QNG" onclick="selectSingle(this)">KFW 40EE + QNG</div>
-          </div>
-        </div>
-
-        <div class="param-box">
-          <div class="param-label">📑 KfW-Programme (Mehrfachauswahl)</div>
-          <div class="pill-group">
-            <div class="pill active" data-group="kfw_prog" data-value="261" onclick="toggleMulti(this)">261</div>
-            <div class="pill" data-group="kfw_prog" data-value="263" onclick="toggleMulti(this)">263</div>
-            <div class="pill active" data-group="kfw_prog" data-value="298" onclick="toggleMulti(this)">298</div>
-            <div class="pill" data-group="kfw_prog" data-value="297" onclick="toggleMulti(this)">297</div>
-            <div class="pill" data-group="kfw_prog" data-value="266" onclick="toggleMulti(this)">266</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="cockpit-content">
+  <div class="app-container">
+    <!-- Header -->
+    <div class="header-bar">
+      <div class="brand-area">
+        <div class="brand-icon">🏗️</div>
         <div>
-          <div class="section-title">📋 Machbarkeitsdaten & Kundenkriterien</div>
-          <div class="section-desc">Eckdaten zur Vorprüfung und Projektsteuerung (DSGVO-konform, rein technisch)</div>
-        </div>
-
-        <div class="grid-cards">
-          <!-- Card 1 -->
-          <div class="card">
-            <div class="card-title">🏢 Projektdaten & Dimensionierung</div>
-            <div class="field-row">
-              <span class="field-title">Anzahl Wohneinheiten:</span>
-              <div class="input-with-pill">
-                <input type="number" id="unitCount" class="input-clean" placeholder="z. B. 6" />
-                <div class="pill highlight-orange" id="pill_unit_max" onclick="toggleMaxOption('unitCount', this)">⚡ Maximal möglich</div>
-              </div>
-            </div>
-            <div class="field-row">
-              <span class="field-title">Gesamtwohnfläche (m²):</span>
-              <div class="input-with-pill">
-                <input type="number" id="totalArea" class="input-clean" placeholder="z. B. 480" />
-                <div class="pill highlight-orange" id="pill_area_max" onclick="toggleMaxOption('totalArea', this)">⚡ Maximal möglich</div>
-              </div>
-            </div>
-            <div class="field-row">
-              <span class="field-title">Durchschnittliche Wohnungsgröße:</span>
-              <div class="pill-group">
-                <div class="pill" data-group="avg_size" data-value="40m²" onclick="selectSingle(this)">40m²</div>
-                <div class="pill" data-group="avg_size" data-value="50m²" onclick="selectSingle(this)">50m²</div>
-                <div class="pill active" data-group="avg_size" data-value="60m²" onclick="selectSingle(this)">60m²</div>
-                <div class="pill" data-group="avg_size" data-value="70m²" onclick="selectSingle(this)">70m²</div>
-                <div class="pill" data-group="avg_size" data-value="80m²" onclick="selectSingle(this)">80m²</div>
-                <div class="pill" data-group="avg_size" data-value="90m²" onclick="selectSingle(this)">90m²</div>
-                <div class="pill highlight-orange" data-group="avg_size" data-value="Maximal / Flexibel ermitteln" onclick="selectSingle(this)">⚡ Maximal optimieren</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="card">
-            <div class="card-title">🎯 Nutzung & Zielgruppe</div>
-            <div class="field-row">
-              <span class="field-title">Spätere Gebäudenutzung:</span>
-              <div class="pill-group">
-                <div class="pill active" data-group="usage" data-value="Vermieten" onclick="toggleMulti(this)">Vermieten</div>
-                <div class="pill" data-group="usage" data-value="Verkauf" onclick="toggleMulti(this)">Verkauf</div>
-                <div class="pill" data-group="usage" data-value="Wohnen & Gewerbe" onclick="toggleMulti(this)">Wohnen + Gewerbe</div>
-                <div class="pill" data-group="usage" data-value="Ferienwohnungen" onclick="toggleMulti(this)">Ferienwohnungen</div>
-              </div>
-            </div>
-            <div class="field-row" style="margin-top: 4px;">
-              <span class="field-title">Ausstattungs-Kategorie:</span>
-              <div class="pill-group">
-                <div class="pill" data-group="standard" data-value="Kostengünstig/Wirtschaftlich" onclick="selectSingle(this)">Wirtschaftlich / Einfach</div>
-                <div class="pill active" data-group="standard" data-value="Mittelklasse/Standard" onclick="selectSingle(this)">Standard / Zeitgemäß</div>
-                <div class="pill" data-group="standard" data-value="Exklusiv/Premium" onclick="selectSingle(this)">Exklusiv / Premium</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="card">
-            <div class="card-title">♨️ Haustechnik & Komfort</div>
-            <div class="field-row">
-              <span class="field-title">Heizungsart:</span>
-              <div class="pill-group">
-                <div class="pill active" data-group="heating" data-value="LWWP" onclick="selectSingle(this)">LWWP (Luft-Wasser)</div>
-                <div class="pill" data-group="heating" data-value="Fernwärme" onclick="selectSingle(this)">Fernwärme</div>
-                <div class="pill" data-group="heating" data-value="Erdwärme" onclick="selectSingle(this)">Erdwärme</div>
-              </div>
-            </div>
-            <div class="field-row">
-              <span class="field-title">Lüftungsanlage:</span>
-              <div class="pill-group">
-                <div class="pill active" data-group="vent" data-value="Dezentral" onclick="selectSingle(this)">Dezentral</div>
-                <div class="pill" data-group="vent" data-value="Zentral" onclick="selectSingle(this)">Zentral</div>
-                <div class="pill" data-group="vent" data-value="Keine" onclick="selectSingle(this)">Keine</div>
-              </div>
-            </div>
-            <div class="field-row">
-              <span class="field-title">Fahrstuhl & Barrierefreiheit:</span>
-              <div class="pill-group">
-                <div class="pill" data-group="lift" data-value="Fahrstuhl Ja" onclick="toggleMulti(this)">Fahrstuhl Ja</div>
-                <div class="pill" data-group="lift" data-value="Fahrstuhl wenn nötig" onclick="toggleMulti(this)">Fahrstuhl (wenn nötig)</div>
-                <div class="pill" data-group="barrier" data-value="Barrierefrei (alle)" onclick="toggleMulti(this)">Barrierefrei</div>
-                <div class="pill" data-group="barrier" data-value="Rollstuhlgerecht" onclick="toggleMulti(this)">Rollstuhlgerecht</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 4 -->
-          <div class="card">
-            <div class="card-title">📐 Architektur & Hülle</div>
-            <div class="field-row">
-              <span class="field-title">Architekturstil:</span>
-              <div class="pill-group">
-                <div class="pill active" data-group="style" data-value="Modern / Kubisch" onclick="selectSingle(this)">Modern / Kubisch</div>
-                <div class="pill" data-group="style" data-value="Nachbarschaft einpflegen" onclick="selectSingle(this)">Nachbarschaft anpassen</div>
-                <div class="pill" data-group="style" data-value="Individuell" onclick="selectSingle(this)">Individueller Entwurf</div>
-              </div>
-            </div>
-            <div class="field-row">
-              <span class="field-title">Fassade & Dach:</span>
-              <div class="pill-group">
-                <div class="pill active" data-group="facade" data-value="Putz" onclick="toggleMulti(this)">Putz</div>
-                <div class="pill" data-group="facade" data-value="Verblender" onclick="toggleMulti(this)">Verblender</div>
-                <div class="pill" data-group="facade" data-value="Holz" onclick="toggleMulti(this)">Holz</div>
-                <div class="pill active" data-group="roof" data-value="Flachdach" onclick="selectSingle(this)">Flachdach</div>
-                <div class="pill" data-group="roof" data-value="Pultdach" onclick="selectSingle(this)">Pultdach</div>
-                <div class="pill" data-group="roof" data-value="Satteldach" onclick="selectSingle(this)">Satteldach</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 5 -->
-          <div class="card">
-            <div class="card-title">🤝 Gewünschte Leistung MHBK</div>
-            <div class="field-row">
-              <span class="field-title">Leistungspaket:</span>
-              <div class="pill-group">
-                <div class="pill" data-group="scope" data-value="Planung & Genehmigung" onclick="selectSingle(this)">Planung & Bauantrag</div>
-                <div class="pill active" data-group="scope" data-value="Erweiterter Rohbau (seriell)" onclick="selectSingle(this)">Erweiterter Rohbau (seriell)</div>
-                <div class="pill" data-group="scope" data-value="Komplettpaket Schlüsselfertig" onclick="selectSingle(this)">Komplettpaket (Schlüsselfertig)</div>
-              </div>
-            </div>
-            <div class="field-row">
-              <span class="field-title">Wunschtermin Projektstart (Monate ab heute):</span>
-              <input type="number" id="startMonths" class="input-clean" placeholder="z. B. 6 Monate" />
-            </div>
-          </div>
-
-          <!-- Card 6 -->
-          <div class="card">
-            <div class="card-title">🗺️ Baurecht & Unterlagen</div>
-            <div class="field-row">
-              <span class="field-title">Planungsrecht:</span>
-              <div class="pill-group">
-                <div class="pill active" data-group="b_plan" data-value="B-Plan vorhanden" onclick="selectSingle(this)">B-Plan</div>
-                <div class="pill" data-group="b_plan" data-value="§34 BauGB (Innenbereich)" onclick="selectSingle(this)">§34 BauGB</div>
-                <div class="pill" data-group="b_plan" data-value="§35 BauGB (Außenbereich)" onclick="selectSingle(this)">§35 BauGB</div>
-              </div>
-            </div>
-            <div class="field-row" style="margin-top: 6px;">
-              <span class="field-title">Vorliegende Unterlagen:</span>
-              <div class="checkbox-list">
-                <label class="checkbox-label"><input type="checkbox" id="doc_lageplan"> Lageplan / Flurkarte</label>
-                <label class="checkbox-label"><input type="checkbox" id="doc_bestand"> Bestandszeichnungen</label>
-                <label class="checkbox-label"><input type="checkbox" id="doc_vorbescheid"> Bauvorbescheid</label>
-                <label class="checkbox-label"><input type="checkbox" id="doc_statik"> Statik</label>
-                <label class="checkbox-label"><input type="checkbox" id="doc_waerme"> Wärmeschutz</label>
-                <label class="checkbox-label"><input type="checkbox" id="doc_gutachten"> Baugrundgutachten</label>
-              </div>
-            </div>
-          </div>
+          <div class="brand-title">Projekt-Status & Kriterien</div>
+          <div class="brand-subtitle">MHBK Bau- & Vorhabensteuerung</div>
         </div>
       </div>
 
-      <!-- Sticky Save Bar -->
-      <div class="bottom-bar">
-        <div class="save-info" id="lastSavedText">Wähle ein Projekt aus der linken Liste</div>
-        <button type="button" class="btn-save" onclick="saveCurrentProject()">
-          <span>💾</span> Änderungen speichern
+      <div class="status-group">
+        <button type="button" class="status-btn progress active" data-group="main_status" data-value="In Bearbeitung" onclick="handleStatusClick(this)">
+          🔵 In Bearbeitung
+        </button>
+        <button type="button" class="status-btn stopped" data-group="main_status" data-value="Gestoppt" onclick="handleStatusClick(this)">
+          🔴 Gestoppt
+        </button>
+        <button type="button" class="status-btn done" data-group="main_status" data-value="Abgeschlossen" onclick="handleStatusClick(this)">
+          🟢 Abgeschlossen
         </button>
       </div>
+    </div>
 
+    <!-- Warum gestoppt Feld -->
+    <div id="stoppedReasonBar" class="stopped-reason-bar">
+      <div class="stopped-label"><span>⚠️</span> Warum gestoppt?</div>
+      <input type="text" id="stoppedReason" class="stopped-input" placeholder="Grund für Stopp angeben...">
+    </div>
+
+    <!-- Hauptparameter Leiste -->
+    <div class="key-params-bar">
+      <div class="param-box">
+        <div class="param-label">🧱 Bauart</div>
+        <div class="pill-group">
+          <div class="pill active" data-group="bauart" data-value="Seriell Hybrid" onclick="selectSingle(this)">Seriell Hybrid</div>
+          <div class="pill" data-group="bauart" data-value="Seriell Massiv" onclick="selectSingle(this)">Seriell Massiv</div>
+          <div class="pill" data-group="bauart" data-value="Stein auf Stein" onclick="selectSingle(this)">Stein auf Stein</div>
+        </div>
+      </div>
+
+      <div class="param-box">
+        <div class="param-label">⚡ Energiestandard</div>
+        <div class="pill-group">
+          <div class="pill" data-group="energiestandard" data-value="KFW-55 EE" onclick="selectSingle(this)">KFW-55 EE</div>
+          <div class="pill active" data-group="energiestandard" data-value="KFW 40EE" onclick="selectSingle(this)">KFW 40EE</div>
+          <div class="pill" data-group="energiestandard" data-value="KFW 40EE + QNG" onclick="selectSingle(this)">KFW 40EE + QNG</div>
+        </div>
+      </div>
+
+      <div class="param-box">
+        <div class="param-label">📑 KfW-Programme</div>
+        <div class="pill-group">
+          <div class="pill active" data-group="kfw_prog" data-value="261" onclick="toggleMulti(this)">261</div>
+          <div class="pill" data-group="kfw_prog" data-value="263" onclick="toggleMulti(this)">263</div>
+          <div class="pill active" data-group="kfw_prog" data-value="298" onclick="toggleMulti(this)">298</div>
+          <div class="pill" data-group="kfw_prog" data-value="297" onclick="toggleMulti(this)">297</div>
+          <div class="pill" data-group="kfw_prog" data-value="266" onclick="toggleMulti(this)">266</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formular-Bereich -->
+    <div class="main-body">
+      <div>
+        <div class="section-header-title">📋 Kundenanforderungen & Machbarkeitsdaten</div>
+        <div class="section-subtitle">Strukturierte Kriterien zur Planung und Vorprüfung</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="card">
+          <div class="card-title">🏢 Projektdaten & Dimensionierung</div>
+          <div class="field-row">
+            <span class="field-title">Anzahl Wohneinheiten:</span>
+            <div style="display:flex; gap:6px;">
+              <input type="number" id="unitCount" class="input-clean" placeholder="z. B. 6" />
+              <div class="pill highlight-orange" id="pill_unit_max" onclick="toggleMaxOption('unitCount', this)">⚡ Max</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-title">Gesamtwohnfläche (m²):</span>
+            <div style="display:flex; gap:6px;">
+              <input type="number" id="totalArea" class="input-clean" placeholder="z. B. 480" />
+              <div class="pill highlight-orange" id="pill_area_max" onclick="toggleMaxOption('totalArea', this)">⚡ Max</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-title">Durchschnittliche Wohnungsgröße:</span>
+            <div class="pill-group">
+              <div class="pill" data-group="avg_size" data-value="40m²" onclick="selectSingle(this)">40m²</div>
+              <div class="pill" data-group="avg_size" data-value="50m²" onclick="selectSingle(this)">50m²</div>
+              <div class="pill active" data-group="avg_size" data-value="60m²" onclick="selectSingle(this)">60m²</div>
+              <div class="pill" data-group="avg_size" data-value="70m²" onclick="selectSingle(this)">70m²</div>
+              <div class="pill" data-group="avg_size" data-value="80m²" onclick="selectSingle(this)">80m²</div>
+              <div class="pill highlight-orange" data-group="avg_size" data-value="Maximal optimieren" onclick="selectSingle(this)">⚡ Max optimieren</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎯 Nutzung & Zielgruppe</div>
+          <div class="field-row">
+            <span class="field-title">Spätere Gebäudenutzung:</span>
+            <div class="pill-group">
+              <div class="pill active" data-group="usage" data-value="Vermieten" onclick="toggleMulti(this)">Vermieten</div>
+              <div class="pill" data-group="usage" data-value="Verkauf" onclick="toggleMulti(this)">Verkauf</div>
+              <div class="pill" data-group="usage" data-value="Wohnen & Gewerbe" onclick="toggleMulti(this)">Wohnen + Gewerbe</div>
+            </div>
+          </div>
+          <div class="field-row" style="margin-top: 4px;">
+            <span class="field-title">Ausstattungs-Kategorie:</span>
+            <div class="pill-group">
+              <div class="pill" data-group="standard" data-value="Wirtschaftlich" onclick="selectSingle(this)">Wirtschaftlich</div>
+              <div class="pill active" data-group="standard" data-value="Standard" onclick="selectSingle(this)">Standard</div>
+              <div class="pill" data-group="standard" data-value="Premium" onclick="selectSingle(this)">Premium</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">♨️ Haustechnik & Komfort</div>
+          <div class="field-row">
+            <span class="field-title">Heizungsart:</span>
+            <div class="pill-group">
+              <div class="pill active" data-group="heating" data-value="LWWP" onclick="selectSingle(this)">LWWP</div>
+              <div class="pill" data-group="heating" data-value="Fernwärme" onclick="selectSingle(this)">Fernwärme</div>
+              <div class="pill" data-group="heating" data-value="Erdwärme" onclick="selectSingle(this)">Erdwärme</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-title">Lüftungsanlage:</span>
+            <div class="pill-group">
+              <div class="pill active" data-group="vent" data-value="Dezentral" onclick="selectSingle(this)">Dezentral</div>
+              <div class="pill" data-group="vent" data-value="Zentral" onclick="selectSingle(this)">Zentral</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-title">Komfort:</span>
+            <div class="pill-group">
+              <div class="pill active" data-group="lift" data-value="Fahrstuhl Ja" onclick="toggleMulti(this)">Fahrstuhl Ja</div>
+              <div class="pill active" data-group="barrier" data-value="Barrierefrei" onclick="toggleMulti(this)">Barrierefrei</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🗺️ Baurecht & Vorhandene Unterlagen</div>
+          <div class="field-row">
+            <span class="field-title">Planungsrecht:</span>
+            <div class="pill-group">
+              <div class="pill active" data-group="b_plan" data-value="B-Plan vorhanden" onclick="selectSingle(this)">B-Plan</div>
+              <div class="pill" data-group="b_plan" data-value="§34 BauGB" onclick="selectSingle(this)">§34 BauGB</div>
+              <div class="pill" data-group="b_plan" data-value="§35 BauGB" onclick="selectSingle(this)">§35 BauGB</div>
+            </div>
+          </div>
+          <div class="field-row" style="margin-top: 4px;">
+            <span class="field-title">Vorliegende Unterlagen:</span>
+            <div class="checkbox-list">
+              <label class="checkbox-label"><input type="checkbox" id="doc_lageplan"> Lageplan</label>
+              <label class="checkbox-label"><input type="checkbox" id="doc_bestand"> Bestand</label>
+              <label class="checkbox-label"><input type="checkbox" id="doc_statik"> Statik</label>
+              <label class="checkbox-label"><input type="checkbox" id="doc_gutachten"> Bodengutachten</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-bar">
+      <div class="last-saved" id="lastSavedText">Noch nicht gespeichert</div>
+      <button type="button" class="btn-save" onclick="saveData()">💾 Speichern</button>
     </div>
   </div>
 
-  <div id="toast" class="toast">✓ Projekt erfolgreich aktualisiert!</div>
+  <div id="toast" class="toast">✓ Änderungen gespeichert!</div>
 
   <script>
-    let projects = [
-      { id: '5106751303', name: 'V.Konrad_Igor Strawinski Str. 27_Pforzheim', location: 'Pforzheim', status: 'In Bearbeitung', stoppedReason: '', bauart: 'Seriell Hybrid', energiestandard: 'KFW 40EE', kfw_prog: ['261', '298'], unitCount: 8, unitMax: false, totalArea: 540, areaMax: false, avg_size: '60m²', usage: ['Vermieten'], standard: 'Mittelklasse/Standard', heating: 'LWWP', vent: 'Dezentral', lift: ['Fahrstuhl Ja'], barrier: ['Barrierefrei (alle)'], style: 'Modern / Kubisch', facade: ['Putz', 'Verblender'], roof: 'Flachdach', scope: 'Erweiterter Rohbau (seriell)', startMonths: 4, b_plan: 'B-Plan vorhanden', doc_lageplan: true, doc_bestand: true, doc_vorbescheid: false, doc_statik: false, doc_waerme: false, doc_gutachten: false },
-      { id: '5106430647', name: 'T.Billic_Bargteheider Straße 86-94_Hamburg', location: 'Hamburg', status: 'In Bearbeitung', stoppedReason: '', bauart: 'Seriell Hybrid', energiestandard: 'KFW 40EE + QNG', kfw_prog: ['261', '297', '298'], unitCount: 14, unitMax: false, totalArea: 920, areaMax: false, avg_size: '70m²', usage: ['Vermieten', 'Verkauf'], standard: 'Exklusiv/Premium', heating: 'Fernwärme', vent: 'Zentral', lift: ['Fahrstuhl Ja'], barrier: ['Barrierefrei (alle)', 'Rollstuhlgerecht'], style: 'Modern / Kubisch', facade: ['Verblender'], roof: 'Flachdach', scope: 'Komplettpaket Schlüsselfertig', startMonths: 6, b_plan: '§34 BauGB (Innenbereich)', doc_lageplan: true, doc_bestand: true, doc_vorbescheid: true, doc_statik: true, doc_waerme: true, doc_gutachten: true },
-      { id: '5105745267', name: 'M.Wiese_Bahnhofstraße 37_Bünde', location: 'Bünde', status: 'Gestoppt', stoppedReason: 'Wirtschaftlichkeitsprüfung noch nicht freigegeben', bauart: 'Stein auf Stein', energiestandard: 'KFW-55 EE', kfw_prog: ['261'], unitCount: 4, unitMax: false, totalArea: 320, areaMax: false, avg_size: '80m²', usage: ['Vermieten'], standard: 'Kostengünstig/Wirtschaftlich', heating: 'LWWP', vent: 'Dezentral', lift: [], barrier: [], style: 'Nachbarschaft einpflegen', facade: ['Putz'], roof: 'Satteldach', scope: 'Planung & Genehmigung', startMonths: 8, b_plan: '§34 BauGB (Innenbereich)', doc_lageplan: true, doc_bestand: false, doc_vorbescheid: false, doc_statik: false, doc_waerme: false, doc_gutachten: false },
-      { id: '5105736217', name: 'Elbstone_Friedrich-Ebert-Straße1-5_Pinneberg', location: 'Pinneberg', status: 'In Bearbeitung', stoppedReason: '', bauart: 'Seriell Massiv', energiestandard: 'KFW 40EE', kfw_prog: ['298', '266'], unitCount: 18, unitMax: true, totalArea: 1200, areaMax: true, avg_size: '50m²', usage: ['Vermieten'], standard: 'Mittelklasse/Standard', heating: 'Erdwärme', vent: 'Zentral', lift: ['Fahrstuhl Ja'], barrier: ['Barrierefrei (alle)'], style: 'Modern / Kubisch', facade: ['Putz', 'Holz'], roof: 'Flachdach', scope: 'Erweiterter Rohbau (seriell)', startMonths: 5, b_plan: 'B-Plan vorhanden', doc_lageplan: true, doc_bestand: true, doc_vorbescheid: false, doc_statik: false, doc_waerme: false, doc_gutachten: true },
-      { id: '5105691497', name: 'Konrad Karkow_Hamburger Str-Südring_Bargteheide', location: 'Bargteheide', status: 'In Bearbeitung', stoppedReason: '', bauart: 'Seriell Hybrid', energiestandard: 'KFW 40EE + QNG', kfw_prog: ['261', '298'], unitCount: 12, unitMax: false, totalArea: 840, areaMax: false, avg_size: '70m²', usage: ['Wohnen & Gewerbe'], standard: 'Exklusiv/Premium', heating: 'LWWP', vent: 'Zentral', lift: ['Fahrstuhl Ja'], barrier: ['Barrierefrei (alle)'], style: 'Modern / Kubisch', facade: ['Verblender'], roof: 'Flachdach', scope: 'Komplettpaket Schlüsselfertig', startMonths: 3, b_plan: 'B-Plan vorhanden', doc_lageplan: true, doc_bestand: true, doc_vorbescheid: true, doc_statik: true, doc_waerme: true, doc_gutachten: true },
-      { id: '5105337017', name: 'V.Konrad_Alexanderstr.40_Bremen', location: 'Bremen', status: 'Abgeschlossen', stoppedReason: '', bauart: 'Seriell Hybrid', energiestandard: 'KFW 40EE', kfw_prog: ['261', '298'], unitCount: 6, unitMax: false, totalArea: 410, areaMax: false, avg_size: '60m²', usage: ['Vermieten'], standard: 'Mittelklasse/Standard', heating: 'LWWP', vent: 'Dezentral', lift: [], barrier: ['Barrierefrei (alle)'], style: 'Modern / Kubisch', facade: ['Putz'], roof: 'Flachdach', scope: 'Erweiterter Rohbau (seriell)', startMonths: 0, b_plan: 'B-Plan vorhanden', doc_lageplan: true, doc_bestand: true, doc_vorbescheid: true, doc_statik: true, doc_waerme: true, doc_gutachten: true },
-      { id: '5105265607', name: 'Heinze_Hammeweg 2_Stuhr', location: 'Stuhr', status: 'In Bearbeitung', stoppedReason: '', bauart: 'Seriell Hybrid', energiestandard: 'KFW 40EE', kfw_prog: ['261', '298'], unitCount: 8, unitMax: false, totalArea: 520, areaMax: false, avg_size: '60m²', usage: ['Vermieten'], standard: 'Mittelklasse/Standard', heating: 'LWWP', vent: 'Dezentral', lift: ['Fahrstuhl Ja'], barrier: ['Barrierefrei (alle)'], style: 'Modern / Kubisch', facade: ['Putz'], roof: 'Flachdach', scope: 'Erweiterter Rohbau (seriell)', startMonths: 6, b_plan: '§34 BauGB (Innenbereich)', doc_lageplan: true, doc_bestand: true, doc_vorbescheid: false, doc_statik: false, doc_waerme: false, doc_gutachten: false }
-    ];
-
-    let currentProjectIndex = 0;
-    let currentFilter = 'all';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem('mhbk_chef_portfolio_data');
-      if (saved) {
-        try { projects = JSON.parse(saved); } catch(e){}
-      }
-      renderProjectList();
-      selectProject(0);
-      updateKpis();
-    });
-
-    function updateKpis() {
-      document.getElementById('kpiTotal').innerText = projects.length;
-      document.getElementById('kpiProgress').innerText = projects.filter(p => p.status === 'In Bearbeitung').length;
-      document.getElementById('kpiStopped').innerText = projects.filter(p => p.status === 'Gestoppt').length;
-    }
-
-    function renderProjectList(searchQuery = '') {
-      const container = document.getElementById('projectListContainer');
-      container.innerHTML = '';
-
-      projects.forEach((proj, idx) => {
-        if (currentFilter !== 'all' && proj.status !== currentFilter) return;
-        if (searchQuery && !proj.name.toLowerCase().includes(searchQuery.toLowerCase())) return;
-
-        const item = document.createElement('div');
-        item.className = `project-item ${idx === currentProjectIndex ? 'active' : ''}`;
-        item.onclick = () => selectProject(idx);
-
-        let dotClass = 'dot-progress';
-        if (proj.status === 'Gestoppt') dotClass = 'dot-stopped';
-        if (proj.status === 'Abgeschlossen') dotClass = 'dot-done';
-
-        item.innerHTML = `
-          <div class="item-top">
-            <div class="item-name">${proj.name}</div>
-            <div class="status-dot ${dotClass}" title="${proj.status}"></div>
-          </div>
-          <div class="item-meta">
-            <span class="item-badge">${proj.bauart}</span>
-            <span>${proj.status}</span>
-          </div>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function filterByStatus(status) {
-      currentFilter = status;
-      document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      renderProjectList(document.getElementById('projectSearch').value);
-    }
-
-    function handleSearch(val) { renderProjectList(val); }
-
-    function selectProject(idx) {
-      currentProjectIndex = idx;
-      const proj = projects[idx];
-      if (!proj) return;
-
-      document.getElementById('activeTitle').innerText = proj.name;
-      document.getElementById('activeMeta').innerText = `ID: ${proj.id} | Standort: ${proj.location || 'MHBK'} | Energiestandard: ${proj.energiestandard}`;
-
-      setSelectedValues('main_status', [proj.status]);
-      const stoppedBar = document.getElementById('stoppedReasonBar');
-      if (proj.status === 'Gestoppt') stoppedBar.classList.add('visible');
-      else stoppedBar.classList.remove('visible');
-      document.getElementById('stoppedReason').value = proj.stoppedReason || '';
-
-      setSelectedValues('bauart', [proj.bauart]);
-      setSelectedValues('energiestandard', [proj.energiestandard]);
-      setSelectedValues('kfw_prog', proj.kfw_prog || []);
-
-      const unitMaxPill = document.getElementById('pill_unit_max');
-      if (proj.unitMax) {
-        unitMaxPill.classList.add('active');
-        document.getElementById('unitCount').disabled = true;
-        document.getElementById('unitCount').placeholder = '⚡ Maximal möglich';
-      } else {
-        unitMaxPill.classList.remove('active');
-        document.getElementById('unitCount').disabled = false;
-        document.getElementById('unitCount').value = proj.unitCount || '';
-      }
-
-      const areaMaxPill = document.getElementById('pill_area_max');
-      if (proj.areaMax) {
-        areaMaxPill.classList.add('active');
-        document.getElementById('totalArea').disabled = true;
-        document.getElementById('totalArea').placeholder = '⚡ Maximal möglich';
-      } else {
-        areaMaxPill.classList.remove('active');
-        document.getElementById('totalArea').disabled = false;
-        document.getElementById('totalArea').value = proj.totalArea || '';
-      }
-
-      document.getElementById('startMonths').value = proj.startMonths || '';
-
-      setSelectedValues('avg_size', [proj.avg_size]);
-      setSelectedValues('usage', proj.usage || []);
-      setSelectedValues('standard', [proj.standard]);
-      setSelectedValues('heating', [proj.heating]);
-      setSelectedValues('vent', [proj.vent]);
-      setSelectedValues('lift', proj.lift || []);
-      setSelectedValues('barrier', proj.barrier || []);
-      setSelectedValues('style', [proj.style]);
-      setSelectedValues('facade', proj.facade || []);
-      setSelectedValues('roof', [proj.roof]);
-      setSelectedValues('scope', [proj.scope]);
-      setSelectedValues('b_plan', [proj.b_plan]);
-
-      document.getElementById('doc_lageplan').checked = !!proj.doc_lageplan;
-      document.getElementById('doc_bestand').checked = !!proj.doc_bestand;
-      document.getElementById('doc_vorbescheid').checked = !!proj.doc_vorbescheid;
-      document.getElementById('doc_statik').checked = !!proj.doc_statik;
-      document.getElementById('doc_waerme').checked = !!proj.doc_waerme;
-      document.getElementById('doc_gutachten').checked = !!proj.doc_gutachten;
-
-      document.getElementById('lastSavedText').innerText = `Zuletzt bearbeitet: ${proj.lastSaved || 'Vorlage geladen'}`;
-      renderProjectList(document.getElementById('projectSearch').value);
-    }
+    const monday = window.mondaySdk();
+    let currentBoardId = null;
 
     function handleStatusClick(el) {
       selectSingle(el);
@@ -562,8 +315,7 @@
 
     function selectSingle(el) {
       const group = el.dataset.group;
-      const allInGroup = document.querySelectorAll(`[data-group="${group}"]`);
-      allInGroup.forEach(item => item.classList.remove('active'));
+      document.querySelectorAll(`[data-group="${group}"]`).forEach(item => item.classList.remove('active'));
       el.classList.add('active');
     }
 
@@ -583,73 +335,133 @@
     }
 
     function getSelectedValues(groupName) {
-      const active = document.querySelectorAll(`[data-group="${groupName}"].active`);
-      return Array.from(active).map(el => el.dataset.value);
+      return Array.from(document.querySelectorAll(`[data-group="${groupName}"].active`)).map(el => el.dataset.value);
     }
 
     function setSelectedValues(groupName, valuesArray) {
       if (!valuesArray) return;
-      const all = document.querySelectorAll(`[data-group="${groupName}"]`);
-      all.forEach(el => {
+      document.querySelectorAll(`[data-group="${groupName}"]`).forEach(el => {
         if (valuesArray.includes(el.dataset.value)) el.classList.add('active');
         else el.classList.remove('active');
       });
     }
 
-    function saveCurrentProject() {
-      const proj = projects[currentProjectIndex];
-      if (!proj) return;
+    document.addEventListener('DOMContentLoaded', () => {
+      monday.listen("context", (res) => {
+        if (res?.data?.boardId) {
+          currentBoardId = res.data.boardId;
+          loadData(currentBoardId);
+        }
+      });
+    });
+
+    async function loadData(boardId) {
+      const key = `mhbk_board_header_${boardId}`;
+      try {
+        const res = await monday.storage.instance.getItem(key);
+        const data = res?.data?.value ? JSON.parse(res.data.value) : JSON.parse(localStorage.getItem(key) || 'null');
+        if (data) {
+          setSelectedValues('main_status', data.main_status ? [data.main_status] : ['In Bearbeitung']);
+          const stoppedBar = document.getElementById('stoppedReasonBar');
+          if (data.main_status === 'Gestoppt') stoppedBar.classList.add('visible');
+          else stoppedBar.classList.remove('visible');
+          document.getElementById('stoppedReason').value = data.stoppedReason || '';
+
+          setSelectedValues('bauart', data.bauart ? [data.bauart] : ['Seriell Hybrid']);
+          setSelectedValues('energiestandard', data.energiestandard ? [data.energiestandard] : ['KFW 40EE']);
+          setSelectedValues('kfw_prog', data.kfw_prog || ['261', '298']);
+
+          const unitMaxPill = document.getElementById('pill_unit_max');
+          if (data.unitMax) {
+            unitMaxPill.classList.add('active');
+            document.getElementById('unitCount').disabled = true;
+            document.getElementById('unitCount').placeholder = '⚡ Maximal möglich';
+          } else {
+            unitMaxPill.classList.remove('active');
+            document.getElementById('unitCount').disabled = false;
+            document.getElementById('unitCount').value = data.unitCount || '';
+          }
+
+          const areaMaxPill = document.getElementById('pill_area_max');
+          if (data.areaMax) {
+            areaMaxPill.classList.add('active');
+            document.getElementById('totalArea').disabled = true;
+            document.getElementById('totalArea').placeholder = '⚡ Maximal möglich';
+          } else {
+            areaMaxPill.classList.remove('active');
+            document.getElementById('totalArea').disabled = false;
+            document.getElementById('totalArea').value = data.totalArea || '';
+          }
+
+          setSelectedValues('avg_size', data.avg_size ? [data.avg_size] : ['60m²']);
+          setSelectedValues('usage', data.usage || ['Vermieten']);
+          setSelectedValues('standard', data.standard ? [data.standard] : ['Standard']);
+          setSelectedValues('heating', data.heating ? [data.heating] : ['LWWP']);
+          setSelectedValues('vent', data.vent ? [data.vent] : ['Dezentral']);
+          setSelectedValues('lift', data.lift || []);
+          setSelectedValues('barrier', data.barrier || []);
+          setSelectedValues('b_plan', data.b_plan ? [data.b_plan] : ['B-Plan vorhanden']);
+
+          document.getElementById('doc_lageplan').checked = !!data.doc_lageplan;
+          document.getElementById('doc_bestand').checked = !!data.doc_bestand;
+          document.getElementById('doc_statik').checked = !!data.doc_statik;
+          document.getElementById('doc_gutachten').checked = !!data.doc_gutachten;
+
+          if (data.lastSaved) document.getElementById('lastSavedText').innerText = `Aktualisiert: ${data.lastSaved}`;
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    async function saveData() {
+      const boardId = currentBoardId || "default";
+      const key = `mhbk_board_header_${boardId}`;
+      const now = new Date();
+      const timeStr = now.toLocaleDateString('de-DE') + ' ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
       const isUnitMax = document.getElementById('pill_unit_max').classList.contains('active');
       const isAreaMax = document.getElementById('pill_area_max').classList.contains('active');
       const mainStatus = (getSelectedValues('main_status')[0] || 'In Bearbeitung');
 
-      const now = new Date();
-      const timeStr = now.toLocaleDateString('de-DE') + ' ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const payload = {
+        main_status: mainStatus,
+        stoppedReason: (mainStatus === 'Gestoppt' ? document.getElementById('stoppedReason').value : ''),
+        bauart: (getSelectedValues('bauart')[0] || 'Seriell Hybrid'),
+        energiestandard: (getSelectedValues('energiestandard')[0] || 'KFW 40EE'),
+        kfw_prog: getSelectedValues('kfw_prog'),
 
-      proj.status = mainStatus;
-      proj.stoppedReason = (mainStatus === 'Gestoppt' ? document.getElementById('stoppedReason').value : '');
-      proj.bauart = (getSelectedValues('bauart')[0] || 'Seriell Hybrid');
-      proj.energiestandard = (getSelectedValues('energiestandard')[0] || 'KFW 40EE');
-      proj.kfw_prog = getSelectedValues('kfw_prog');
+        unitCount: isUnitMax ? '' : document.getElementById('unitCount').value,
+        unitMax: isUnitMax,
+        totalArea: isAreaMax ? '' : document.getElementById('totalArea').value,
+        areaMax: isAreaMax,
 
-      proj.unitCount = isUnitMax ? '' : document.getElementById('unitCount').value;
-      proj.unitMax = isUnitMax;
-      proj.totalArea = isAreaMax ? '' : document.getElementById('totalArea').value;
-      proj.areaMax = isAreaMax;
-      proj.startMonths = document.getElementById('startMonths').value;
+        avg_size: (getSelectedValues('avg_size')[0] || ''),
+        usage: getSelectedValues('usage'),
+        standard: (getSelectedValues('standard')[0] || ''),
+        heating: (getSelectedValues('heating')[0] || ''),
+        vent: (getSelectedValues('vent')[0] || ''),
+        lift: getSelectedValues('lift'),
+        barrier: getSelectedValues('barrier'),
+        b_plan: (getSelectedValues('b_plan')[0] || ''),
 
-      proj.avg_size = (getSelectedValues('avg_size')[0] || '');
-      proj.usage = getSelectedValues('usage');
-      proj.standard = (getSelectedValues('standard')[0] || '');
-      proj.heating = (getSelectedValues('heating')[0] || '');
-      proj.vent = (getSelectedValues('vent')[0] || '');
-      proj.lift = getSelectedValues('lift');
-      proj.barrier = getSelectedValues('barrier');
-      proj.style = (getSelectedValues('style')[0] || '');
-      proj.facade = getSelectedValues('facade');
-      proj.roof = (getSelectedValues('roof')[0] || '');
-      proj.scope = (getSelectedValues('scope')[0] || '');
-      proj.b_plan = (getSelectedValues('b_plan')[0] || '');
+        doc_lageplan: document.getElementById('doc_lageplan').checked,
+        doc_bestand: document.getElementById('doc_bestand').checked,
+        doc_statik: document.getElementById('doc_statik').checked,
+        doc_gutachten: document.getElementById('doc_gutachten').checked,
 
-      proj.doc_lageplan = document.getElementById('doc_lageplan').checked;
-      proj.doc_bestand = document.getElementById('doc_bestand').checked;
-      proj.doc_vorbescheid = document.getElementById('doc_vorbescheid').checked;
-      proj.doc_statik = document.getElementById('doc_statik').checked;
-      proj.doc_waerme = document.getElementById('doc_waerme').checked;
-      proj.doc_gutachten = document.getElementById('doc_gutachten').checked;
-      proj.lastSaved = timeStr;
+        lastSaved: timeStr
+      };
 
-      localStorage.setItem('mhbk_chef_portfolio_data', JSON.stringify(projects));
-      document.getElementById('lastSavedText').innerText = `Gespeichert: ${timeStr}`;
+      try {
+        await monday.storage.instance.setItem(key, JSON.stringify(payload));
+        localStorage.setItem(key, JSON.stringify(payload));
+      } catch (e) { localStorage.setItem(key, JSON.stringify(payload)); }
 
-      renderProjectList(document.getElementById('projectSearch').value);
-      updateKpis();
-
+      document.getElementById('lastSavedText').innerText = `Aktualisiert: ${timeStr}`;
       const toast = document.getElementById('toast');
       toast.style.display = 'block';
       setTimeout(() => toast.style.display = 'none', 2500);
     }
   </script>
 </body>
+</html>
 </html>
