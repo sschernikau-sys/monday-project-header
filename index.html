@@ -72,6 +72,16 @@
     .yn-label { font-size: 12px; font-weight: 600; color: #374151; }
     .hint { font-size: 10px; color: var(--text-muted); font-style: italic; }
 
+    /* Ergebnis-Bereiche: Ersteinschätzung & Große Machbarkeit */
+    .result-card { grid-column: 1 / -1; background: #fff; border: 1px solid var(--border-light); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .result-card.es { border-top: 3px solid #0073ea; }
+    .result-card.gm { border-top: 3px solid #00ca72; }
+    .result-title { font-size: 14px; font-weight: 700; color: #1f2a37; }
+    .result-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+    .kpi-field { background: #fafbfc; border: 1px solid var(--border-light); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .kpi-field .field-title { text-transform: uppercase; letter-spacing: .3px; font-size: 10px; color: var(--text-muted); }
+
     .footer-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #fafbfc; border-top: 1px solid var(--border-color); }
     .last-saved { font-size: 11px; color: var(--text-muted); }
     .btn-save { background: var(--primary); color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -405,6 +415,82 @@
         <div class="hint">Datenschutz: Bitte keine Namen, Adressen oder Kontaktdaten eintragen.</div>
       </div>
 
+      <!-- 13. ERSTEINSCHÄTZUNG – Ergebnis -->
+      <div class="result-card es">
+        <div>
+          <div class="result-title">📊 Ersteinschätzung – Ergebnis</div>
+          <div class="result-sub">Kennzahlen, die die Ersteinschätzung ergeben hat</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-field">
+            <span class="field-title">Geschätzte Wohneinheiten</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="es_units" class="input-clean" placeholder="z. B. 8" />
+              <span class="unit">WE</span>
+            </div>
+          </div>
+          <div class="kpi-field">
+            <span class="field-title">Geschätzte Wohnfläche</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="es_area" class="input-clean" placeholder="z. B. 540" />
+              <span class="unit">m²</span>
+            </div>
+          </div>
+          <div class="kpi-field">
+            <span class="field-title">Geförderte Einheiten</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="es_funded" class="input-clean" placeholder="z. B. 3" />
+              <span class="unit">WE</span>
+            </div>
+          </div>
+          <div class="kpi-field">
+            <span class="field-title">Mögliche Geschosse</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="es_floors" class="input-clean" placeholder="z. B. 3" />
+              <span class="unit">Geschosse</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 14. GROSSE MACHBARKEIT – Ergebnis -->
+      <div class="result-card gm">
+        <div>
+          <div class="result-title">✅ Große Machbarkeit – Ergebnis (finale Planung)</div>
+          <div class="result-sub">Kennzahlen der finalen Planung</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-field">
+            <span class="field-title">Wohneinheiten</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="gm_units" class="input-clean" placeholder="z. B. 8" />
+              <span class="unit">WE</span>
+            </div>
+          </div>
+          <div class="kpi-field">
+            <span class="field-title">Wohnfläche</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="gm_area" class="input-clean" placeholder="z. B. 540" />
+              <span class="unit">m²</span>
+            </div>
+          </div>
+          <div class="kpi-field">
+            <span class="field-title">Geförderte Einheiten</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="gm_funded" class="input-clean" placeholder="z. B. 3" />
+              <span class="unit">WE</span>
+            </div>
+          </div>
+          <div class="kpi-field">
+            <span class="field-title">Geschosse</span>
+            <div class="input-unit">
+              <input type="number" min="0" id="gm_floors" class="input-clean" placeholder="z. B. 3" />
+              <span class="unit">Geschosse</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -424,7 +510,9 @@
                   'doc_bauantrag','doc_ausfuehrung','doc_statik','doc_bza',
                   'fahrstuhl','barrierefrei','grundrisse','bplan','bplan_alt','stellplaetze','nutzungsart'];
   const MULTI  = ['kfw_prog','usage','facade','scope','project_desc'];
-  const TEXTS  = ['bplanYear','bplanNumber','plotSize','grundrisseNotes','rentPrice','salePrice','clarifyPoints','specialWishes'];
+  const TEXTS  = ['bplanYear','bplanNumber','plotSize','grundrisseNotes','rentPrice','salePrice','clarifyPoints','specialWishes',
+                  'es_units','es_area','es_funded','es_floors',
+                  'gm_units','gm_area','gm_funded','gm_floors'];
 
   // Einzelauswahl: erneuter Klick auf den aktiven Button wählt ihn wieder ab
   function selectSingle(el) {
