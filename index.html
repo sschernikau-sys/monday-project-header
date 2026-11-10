@@ -42,6 +42,7 @@
     .param-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
 
     .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill-group.col { flex-direction: column; align-items: flex-start; }
     .pill { background: #f0f3f9; border: 1px solid #dbe2ef; color: #434c59; font-size: 12px; font-weight: 600; padding: 5px 11px; border-radius: 16px; cursor: pointer; transition: all .15s; user-select: none; display: inline-flex; align-items: center; gap: 4px; }
     .pill:hover { background: #e2e8f4; }
     .pill.active { background: #0073ea; border-color: #0073ea; color: #fff; box-shadow: 0 2px 5px rgba(0,115,234,.25); }
@@ -57,6 +58,7 @@
     .card-title { font-size: 12px; font-weight: 700; color: #2b394e; border-bottom: 1px solid var(--border-light); padding-bottom: 6px; }
     .field-row { display: flex; flex-direction: column; gap: 5px; }
     .field-title { font-size: 11px; font-weight: 600; color: #4b5563; }
+    .hidden { display: none !important; }
 
     .input-clean, .textarea-clean { border: 1px solid #d0d4e4; background: #fafbfc; border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--text-main); outline: none; width: 100%; }
     .textarea-clean { min-height: 60px; resize: vertical; }
@@ -193,7 +195,43 @@
         </div>
       </div>
 
-      <!-- 3. Fassade & Planung -->
+      <!-- 3. Welche Punkte beschreiben das Projekt am besten -->
+      <div class="card">
+        <div class="card-title">⭐ Welche Punkte beschreiben Ihr Projekt am besten?</div>
+        <div class="field-row">
+          <span class="field-title">Mehrfachauswahl:</span>
+          <div class="pill-group col">
+            <div class="pill" data-group="project_desc" data-value="Möglichst viele WE (1-Zimmer)" onclick="toggleMulti(this)">Möglichst viele Wohneinheiten (1-Zimmer-Wohnungen)</div>
+            <div class="pill" data-group="project_desc" data-value="Möglichst viele WE (2-Zimmer)" onclick="toggleMulti(this)">Möglichst viele Wohneinheiten (2-Zimmer-Wohnungen)</div>
+            <div class="pill" data-group="project_desc" data-value="Wohnraum für Familien" onclick="toggleMulti(this)">Wohnraum für Familien</div>
+            <div class="pill" data-group="project_desc" data-value="Wohnraum für ältere Menschen" onclick="toggleMulti(this)">Wohnraum für ältere Menschen</div>
+            <div class="pill" data-group="project_desc" data-value="Studentenwohnungen" onclick="toggleMulti(this)">Studentenwohnungen</div>
+            <div class="pill" data-group="project_desc" data-value="Monteur-Zimmer" onclick="toggleMulti(this)">Monteur-Zimmer für Handwerker</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Fahrstuhl & Barrierefreiheit -->
+      <div class="card">
+        <div class="card-title">🛗 Fahrstuhl & Barrierefreiheit</div>
+        <div class="field-row">
+          <span class="field-title">Fahrstuhl:</span>
+          <div class="pill-group">
+            <div class="pill" data-group="fahrstuhl" data-value="Ja" onclick="selectSingle(this)">Ja</div>
+            <div class="pill" data-group="fahrstuhl" data-value="Nur wenn nötig" onclick="selectSingle(this)">Nur wenn nötig</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <span class="field-title">Sollen die Wohnungen barrierefrei sein?</span>
+          <div class="pill-group">
+            <div class="pill" data-group="barrierefrei" data-value="Ja, alle" onclick="selectSingle(this)">Ja, alle</div>
+            <div class="pill" data-group="barrierefrei" data-value="So wenig wie möglich" onclick="selectSingle(this)">So wenig wie möglich</div>
+            <div class="pill" data-group="barrierefrei" data-value="Rollstuhlgerecht" onclick="selectSingle(this)">Rollstuhlgerecht</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Fassade & Planung -->
       <div class="card">
         <div class="card-title">📐 Außenfassade & Hausplanung</div>
         <div class="field-row">
@@ -214,7 +252,23 @@
         </div>
       </div>
 
-      <!-- 4. Vorhandene Unterlagen -->
+      <!-- 6. Grundrisse -->
+      <div class="card">
+        <div class="card-title">🏠 Grundrisse & Wohnungszuschnitte</div>
+        <div class="field-row">
+          <span class="field-title">Gibt es konkrete Wünsche? (z. B. offene Wohnküchen, Gäste-WC, Gästezimmer/Dauerzimmer, große/kleine Bäder, Abstellräume)</span>
+          <div class="pill-group">
+            <div class="pill" data-group="grundrisse" data-value="Ja" onclick="selectSingle(this)">Ja</div>
+            <div class="pill no" data-group="grundrisse" data-value="Nein" onclick="selectSingle(this)">Nein</div>
+          </div>
+        </div>
+        <div class="field-row hidden" id="grundrisseNotesRow">
+          <span class="field-title">Sonstige Punkte:</span>
+          <textarea id="grundrisseNotes" class="textarea-clean" placeholder="Konkrete Wünsche zu Grundrissen und Zuschnitten ..."></textarea>
+        </div>
+      </div>
+
+      <!-- 7. Vorhandene Unterlagen -->
       <div class="card">
         <div class="card-title">📂 Vorhandene Unterlagen</div>
         <div class="yn-row">
@@ -247,25 +301,68 @@
         </div>
       </div>
 
-      <!-- 5. Baurecht -->
+      <!-- 8. Baurecht & Grundstück -->
       <div class="card">
-        <div class="card-title">🗺️ Baurecht</div>
+        <div class="card-title">🗺️ Baurecht & Grundstück</div>
         <div class="field-row">
-          <span class="field-title">Planungsrechtlicher Rahmen:</span>
+          <span class="field-title">Das Grundstück liegt im Geltungsbereich eines B-Plans:</span>
           <div class="pill-group">
-            <div class="pill" data-group="b_plan" data-value="B-Plan vorhanden" onclick="selectSingle(this)">B-Plan</div>
-            <div class="pill" data-group="b_plan" data-value="§34 BauGB" onclick="selectSingle(this)">§34 BauGB</div>
-            <div class="pill" data-group="b_plan" data-value="§35 BauGB" onclick="selectSingle(this)">§35 BauGB</div>
+            <div class="pill" data-group="bplan" data-value="Ja" onclick="selectSingle(this)">Ja</div>
+            <div class="pill no" data-group="bplan" data-value="Nein" onclick="selectSingle(this)">Nein</div>
+          </div>
+        </div>
+        <div class="field-row hidden" id="bplanYesRow">
+          <div class="input-unit">
+            <span class="unit">Jahr:</span>
+            <input type="text" id="bplanYear" class="input-clean" placeholder="z. B. 2019" />
+            <span class="unit">Nummer:</span>
+            <input type="text" id="bplanNumber" class="input-clean" placeholder="z. B. 42" />
+          </div>
+        </div>
+        <div class="field-row hidden" id="bplanNoRow">
+          <span class="field-title">Falls nein, dann gilt:</span>
+          <div class="pill-group">
+            <div class="pill" data-group="bplan_alt" data-value="§34 BauGB" onclick="selectSingle(this)">Innenbereich n. §34 BauGB</div>
+            <div class="pill" data-group="bplan_alt" data-value="§35 BauGB" onclick="selectSingle(this)">Außenbereich n. §35 BauGB</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <span class="field-title">Grundstücksgröße:</span>
+          <div class="input-unit">
+            <input type="number" id="plotSize" class="input-clean" placeholder="z. B. 850" />
+            <span class="unit">m²</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <span class="field-title">Vorgaben für notwendige PKW-Stellplätze:</span>
+          <div class="pill-group">
+            <div class="pill" data-group="stellplaetze" data-value="Ja" onclick="selectSingle(this)">Ja</div>
+            <div class="pill no" data-group="stellplaetze" data-value="Nein" onclick="selectSingle(this)">Nein</div>
+            <div class="pill no" data-group="stellplaetze" data-value="Nicht bekannt" onclick="selectSingle(this)">Nicht bekannt</div>
           </div>
         </div>
       </div>
 
-      <!-- 6. Gewünschte Leistungen -->
+      <!-- 9. Art der baulichen Nutzung -->
+      <div class="card">
+        <div class="card-title">🏘️ Art der baulichen Nutzung</div>
+        <div class="field-row">
+          <div class="pill-group col">
+            <div class="pill" data-group="nutzungsart" data-value="WA" onclick="selectSingle(this)">Allgemeines Wohngebiet (WA)</div>
+            <div class="pill" data-group="nutzungsart" data-value="WR" onclick="selectSingle(this)">Reines Wohngebiet (WR)</div>
+            <div class="pill" data-group="nutzungsart" data-value="GE" onclick="selectSingle(this)">Gewerbegebiet (GE)</div>
+            <div class="pill" data-group="nutzungsart" data-value="GI" onclick="selectSingle(this)">Industriegebiet (GI)</div>
+            <div class="pill" data-group="nutzungsart" data-value="M" onclick="selectSingle(this)">Mischgebiet (M)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Gewünschte Leistungen -->
       <div class="card">
         <div class="card-title">🤝 Gewünschte Leistungen</div>
         <div class="field-row">
           <span class="field-title">Mehrfachauswahl:</span>
-          <div class="pill-group" style="flex-direction: column; align-items: flex-start;">
+          <div class="pill-group col">
             <div class="pill" data-group="scope" data-value="Förderfähige Planung" onclick="toggleMulti(this)">Förderfähige Planung inkl. Baugenehmigung & Ausführungszeichnungen</div>
             <div class="pill" data-group="scope" data-value="Erweiterter Rohbau" onclick="toggleMulti(this)">Erweiterter Rohbau in serieller Bauweise (Innenausbau = Eigenleistung)</div>
             <div class="pill" data-group="scope" data-value="Komplettpaket" onclick="toggleMulti(this)">Komplettpaket (Schlüsselfertig) – von der Planung bis zur bezugsfertigen Übergabe</div>
@@ -273,7 +370,7 @@
         </div>
       </div>
 
-      <!-- 7. Örtliche Gegebenheiten -->
+      <!-- 11. Örtliche Gegebenheiten -->
       <div class="card">
         <div class="card-title">📍 Örtliche Gegebenheiten</div>
         <div class="field-row">
@@ -294,7 +391,7 @@
         </div>
       </div>
 
-      <!-- 8. Klärung & Wünsche -->
+      <!-- 12. Klärung & Wünsche -->
       <div class="card wide">
         <div class="card-title">📝 Klärungsbedarf & Besondere Wünsche</div>
         <div class="field-row">
@@ -323,14 +420,18 @@
   const monday = window.mondaySdk();
   let currentBoardId = null;
 
-  const SINGLE = ['main_status','bauart','energiestandard','avg_size','standard','b_plan','hausplanung','doc_bauantrag','doc_ausfuehrung','doc_statik','doc_bza'];
-  const MULTI  = ['kfw_prog','usage','facade','scope'];
+  const SINGLE = ['main_status','bauart','energiestandard','avg_size','standard','hausplanung',
+                  'doc_bauantrag','doc_ausfuehrung','doc_statik','doc_bza',
+                  'fahrstuhl','barrierefrei','grundrisse','bplan','bplan_alt','stellplaetze','nutzungsart'];
+  const MULTI  = ['kfw_prog','usage','facade','scope','project_desc'];
+  const TEXTS  = ['bplanYear','bplanNumber','plotSize','grundrisseNotes','rentPrice','salePrice','clarifyPoints','specialWishes'];
 
   // Einzelauswahl: erneuter Klick auf den aktiven Button wählt ihn wieder ab
   function selectSingle(el) {
     const wasActive = el.classList.contains('active');
     document.querySelectorAll(`[data-group="${el.dataset.group}"]`).forEach(i => i.classList.remove('active'));
     if (!wasActive) el.classList.add('active');
+    updateConditional();
   }
   function handleStatusClick(el) {
     selectSingle(el);
@@ -358,7 +459,17 @@
     input.placeholder = isMax ? '⚡ Maximal möglich' : placeholder;
   }
 
+  // Zeigt/versteckt abhängige Felder (B-Plan Ja/Nein, Grundrisse Ja)
+  function updateConditional() {
+    const bplan = getVals('bplan')[0] || '';
+    document.getElementById('bplanYesRow').classList.toggle('hidden', bplan !== 'Ja');
+    document.getElementById('bplanNoRow').classList.toggle('hidden', bplan !== 'Nein');
+    const gr = getVals('grundrisse')[0] || '';
+    document.getElementById('grundrisseNotesRow').classList.toggle('hidden', gr !== 'Ja');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    updateConditional();
     monday.listen("context", (res) => {
       if (res?.data?.boardId) { currentBoardId = res.data.boardId; loadData(currentBoardId); }
     });
@@ -371,19 +482,26 @@
       const data = res?.data?.value ? JSON.parse(res.data.value) : JSON.parse(localStorage.getItem(key) || 'null');
       if (!data) return;
 
+      // Übernahme alter Werte (früheres Feld "b_plan")
+      if (!('bplan' in data) && data.b_plan) {
+        if (data.b_plan === 'B-Plan vorhanden') { data.bplan = 'Ja'; }
+        else if (String(data.b_plan).startsWith('§34') || String(data.b_plan).startsWith('§35')) {
+          data.bplan = 'Nein';
+          data.bplan_alt = String(data.b_plan).startsWith('§34') ? '§34 BauGB' : '§35 BauGB';
+        }
+      }
+
       SINGLE.forEach(g => { if (g in data) setVals(g, data[g] ? [data[g]] : []); });
       MULTI.forEach(g => { if (g in data) setVals(g, data[g] || []); });
+      TEXTS.forEach(id => { document.getElementById(id).value = data[id] || ''; });
 
       document.getElementById('stoppedReasonBar').classList.toggle('visible', data.main_status === 'Gestoppt');
       document.getElementById('stoppedReason').value = data.stoppedReason || '';
 
       applyMax('unitCount', 'pill_unit_max', data.unitMax, data.unitCount, 'z. B. 6');
       applyMax('totalArea', 'pill_area_max', data.areaMax, data.totalArea, 'z. B. 480');
-      document.getElementById('rentPrice').value = data.rentPrice || '';
-      document.getElementById('salePrice').value = data.salePrice || '';
-      document.getElementById('clarifyPoints').value = data.clarifyPoints || '';
-      document.getElementById('specialWishes').value = data.specialWishes || '';
 
+      updateConditional();
       if (data.lastSaved) document.getElementById('lastSavedText').innerText = `Aktualisiert: ${data.lastSaved}`;
     } catch (e) { console.error(e); }
   }
@@ -400,14 +518,16 @@
     const payload = { lastSaved: timeStr };
     SINGLE.forEach(g => payload[g] = getVals(g)[0] || '');
     MULTI.forEach(g => payload[g] = getVals(g));
+    TEXTS.forEach(id => payload[id] = document.getElementById(id).value);
+
+    // Abhängige Felder nur speichern, wenn sie sichtbar sind
+    if (payload.bplan !== 'Ja') { payload.bplanYear = ''; payload.bplanNumber = ''; }
+    if (payload.bplan !== 'Nein') { payload.bplan_alt = ''; }
+    if (payload.grundrisse !== 'Ja') { payload.grundrisseNotes = ''; }
 
     payload.stoppedReason = payload.main_status === 'Gestoppt' ? document.getElementById('stoppedReason').value : '';
     payload.unitMax = isUnitMax;  payload.unitCount = isUnitMax ? '' : document.getElementById('unitCount').value;
     payload.areaMax = isAreaMax;  payload.totalArea = isAreaMax ? '' : document.getElementById('totalArea').value;
-    payload.rentPrice = document.getElementById('rentPrice').value;
-    payload.salePrice = document.getElementById('salePrice').value;
-    payload.clarifyPoints = document.getElementById('clarifyPoints').value;
-    payload.specialWishes = document.getElementById('specialWishes').value;
 
     try {
       await monday.storage.instance.setItem(key, JSON.stringify(payload));
